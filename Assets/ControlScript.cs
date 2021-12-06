@@ -11,16 +11,16 @@ public class ControlScript : MonoBehaviour
     Vector3 lookAtTarget;
     Quaternion playerRot;
     public Transform player;
-    
+    bool isAnimating;
     public float miny, maxy,fixedX;
-    //public Animation anim;
+    public Animator anim;
     private void Awake()//
     {
         instance = this;
     }
     void Start()
     {
-        //anim = gameObject.GetComponent<Animation>();
+        anim = gameObject.GetComponentInChildren<Animator>();
 
     }
 
@@ -34,6 +34,12 @@ public class ControlScript : MonoBehaviour
         else
         {
             isMoving = false;
+            if(isAnimating == true)
+            {
+                isAnimating = false;
+                anim.Play("Base Layer.Idle01", 0, 0.025f);
+            }
+            
         }
         if(isMoving)
         {
@@ -62,14 +68,29 @@ public class ControlScript : MonoBehaviour
     void Move()
     {
         //transform.rotation = Quaternion.Slerp(transform.rotation, playerRot, speed * Time.deltaTime);
-        
+        if(isAnimating == false)
+        {
+            anim.Play("Base Layer.Push", 0, 0.25f);
+            isAnimating = true;
+        }
+
+         
+
         Vector3 rot = Vector3.MoveTowards(player.position, targetPosition, speed * Time.deltaTime);
+        //anim.Play("Push");
         rot.y = Mathf.Clamp(rot.y, miny, maxy);
         rot.x = fixedX;
         player.position = rot;
         if (player.position == targetPosition)
         {
             isMoving = false;
+            
+            if(isAnimating == true)
+            {
+                anim.Play("Base Layer.Idle01", 0, 0.025f);
+                isAnimating = false;
+            }
+            
         }
     }
 
