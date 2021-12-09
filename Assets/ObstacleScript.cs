@@ -6,12 +6,15 @@ public class ObstacleScript : MonoBehaviour
 {
     public static ObstacleScript instance;
     private ControlScript controlScript;
-    public float health = 5f;
-    public float damage;
+    
+    public float _health = 5f;
+  
+    public float _damage = 1;
     //public Rigidbody oppforce;
-    
-    
-    
+    [SerializeField]
+    private float timer;
+    //public GameObject smokeExplode;
+
     private void Awake()//
     {
         instance = this;
@@ -31,29 +34,41 @@ public class ObstacleScript : MonoBehaviour
     {
 
     }
-    private void OnCollisionEnter(Collision collision)
+
+
+    private void OnCollisionStay(Collision collision)
     {
-
-        foreach (ContactPoint contact in collision.contacts)
+        
+        timer += Time.deltaTime;
+        if (timer >= .3f)
         {
+            timer = 0;
 
-            if (contact.otherCollider.CompareTag("Player"))
+            foreach (ContactPoint contact in collision.contacts)
             {
 
-                health--;
-                if (health <= 0)
+                if (contact.otherCollider.CompareTag("Player"))
                 {
-                    DestroyMe();
+                    _health -= _damage;
                     
-                }
+                    
+                    if (_health <= 0)
+                    {
+                        DestroyMe();
 
+                    }
+
+                }
             }
         }
     }
+    
 
     void DestroyMe()
     {
+        
         gameObject.SetActive(false);
 
     }
+    
 }

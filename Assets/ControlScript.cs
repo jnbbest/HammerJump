@@ -14,6 +14,7 @@ public class ControlScript : MonoBehaviour
     bool isAnimating;
     public float miny, maxy,fixedX;
     public Animator anim;
+    //public CoinHandler coinHandler;
     private void Awake()//
     {
         instance = this;
@@ -29,16 +30,14 @@ public class ControlScript : MonoBehaviour
         
         if(Input.GetMouseButton(0))
         {
+            ObstacleScript.instance._damage = 3f;
             SetTargetPosition();
+            
         }
         else
         {
             isMoving = false;
-            if(isAnimating == true)
-            {
-                isAnimating = false;
-                anim.Play("Base Layer.Idle01", 0, 0.025f);
-            }
+            
             
         }
         if(isMoving)
@@ -57,6 +56,16 @@ public class ControlScript : MonoBehaviour
         if (Physics.Raycast(myray, out hit, 1000))
         {
             targetPosition = hit.point;
+            float RotTemp = targetPosition.z - transform.position.z;
+            //Debug.Log(RotTemp+ " "+ transform.position.z + " "+ targetPosition.z);
+            if(RotTemp >= 0)
+            {
+                transform.rotation = Quaternion.Euler(0, 180, 0);
+            }
+            else
+            {
+                transform.rotation = Quaternion.Euler(0,0,0);
+            }
             //this.transform.LookAt(targetPosition);
             //lookAtTarget = new Vector3(targetPosition.x - transform.position.x, transform.position.y, targetPosition.z - transform.position.y);
             isMoving = true;
@@ -68,14 +77,7 @@ public class ControlScript : MonoBehaviour
     void Move()
     {
         //transform.rotation = Quaternion.Slerp(transform.rotation, playerRot, speed * Time.deltaTime);
-        if(isAnimating == false)
-        {
-            anim.Play("Base Layer.Push", 0, 0.25f);
-            isAnimating = true;
-        }
-
-         
-
+        
         Vector3 rot = Vector3.MoveTowards(player.position, targetPosition, speed * Time.deltaTime);
         //anim.Play("Push");
         rot.y = Mathf.Clamp(rot.y, miny, maxy);
@@ -85,13 +87,19 @@ public class ControlScript : MonoBehaviour
         {
             isMoving = false;
             
-            if(isAnimating == true)
-            {
-                anim.Play("Base Layer.Idle01", 0, 0.025f);
-                isAnimating = false;
-            }
+            
             
         }
     }
+    private void OnCollisionEnter(Collision collision)
+    {
+        foreach (ContactPoint contact in collision.contacts)
+        {
 
+            if (contact.otherCollider.CompareTag("Gold"))
+            {
+                CoinHandler.instance.coinAmount++;
+            }
+        }
+    }
 }

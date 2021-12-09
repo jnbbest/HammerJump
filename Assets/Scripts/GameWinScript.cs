@@ -54,6 +54,7 @@ public class GameWinScript : MonoBehaviour
         {
             //Debug.Log(" you won ??!!!!!");
             ballThrower.SetActive(false);
+            
             winPanel.SetActive(true);
             levelshow.SetActive(false);
             Clevel.SetActive(false);
